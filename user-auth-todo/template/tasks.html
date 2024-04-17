@@ -1,0 +1,124 @@
+<!-- <h1>My To-Do List</h1> -->
+
+<style>
+  /* Style the <ul> element */
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  /* Style each <li> element (task item) */
+  li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+
+  /* Style the buttons */
+  button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  /* Style the "Mark as Completed" button */
+  .completed {
+    background-color: green;
+    color: white;
+  }
+
+  /* Style the "Mark as Incomplete" button */
+  .incomplete {
+    background-color: red;
+    color: white;
+  }
+
+  /* Style the "Delete" button */
+  .delete {
+    background-color: #333;
+    color: white;
+  }
+</style>
+
+<ul>
+  <% tasks.forEach(task => { %>
+    <li>
+      <%= task.title %>
+      <% if (task.completed) { %>
+        <button class="incomplete" onclick="updateTask(<%= task._id %>, false)">Mark as Incomplete</button>
+      <% } else { %>
+        <button class="completed" onclick="updateTask(<%= task._id %>, true)">Mark as Completed</button>
+      <% } %>
+      <button class="delete" onclick="deleteTask(<%= task._id %>)">Delete</button>
+    </li>
+  <% }); %>
+</ul>
+
+<!-- <table id="table">
+  <tr>
+      <td>Title</td>
+      <td>Status</td>
+  </tr>
+                          
+  <% Object.values(obj).forEach(function(tower){%>
+      <% for (let i = 0; i < tower.ProjectileVelocity.length; i++) { %>
+          <tr>
+              <td>Tier </td>
+              <td><%= tower.ProjectileVelocity[i] %></td>
+              <td><%= tower.MsBetweenFires[i] %>ms</td>
+          </tr>
+      <%  } %>
+  <%})%>
+</table> -->
+
+<form onsubmit="addTask(event)">
+  <input type="text" name="title" required>
+  <button type="submit">Add Task</button>
+</form>
+
+<script>
+  async function addTask(event) {
+    event.preventDefault();
+    try {
+      const title = document.querySelector('input[name="title"]').value;
+    console.log(title);
+    const response = await fetch('/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ title })
+    });
+    const data = await response.json();
+    console.log(data, 'data');
+    window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
+    
+  }
+
+  async function deleteTask(id) {
+    const response = await fetch(`/tasks/${id}`, {
+      method: 'DELETE'
+    });
+    const data = await response.json();
+    window.location.reload();
+  }
+
+  async function updateTask(id, completed) {
+    const response = await fetch(`/tasks/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ completed })
+    });
+    const data = await response.json();
+    window.location.reload();
+  }
+</script>
